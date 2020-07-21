@@ -20,11 +20,11 @@ function initializeAppSA() {
 }
 
 const db = initializeAppSA();
+const user = {
+  uid: '2hkCE7wqEg58sVYNxyr0'
+}
 
 async function add(product, quantity){
-  const user = {
-    uid: '2hkCE7wqEg58sVYNxyr0'
-  }
 
   // 商品がかごの中に入っているかどうかのチェック
   const item = await db
@@ -55,13 +55,15 @@ async function getProductDocument (document) {
  return await db.collection('products').doc(document).get()
 }
 
-async function remove(productRef, quantity) {
-  await productRef.update({
-    quantity: admin.firestore.FieldValue.increment(-1 * quantity),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp()
-  })
+async function remove(product, quantity) {
+  await db
+    .doc(`users/${user.uid}/items-in-cart/${product.id}`)
+    .update({
+      quantity: admin.firestore.FieldValue.increment(-1 * quantity),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    })
 }
 
 getProductDocument('bWDgh46LtdLrrMJceQo2').then((product) => {
-  add(product, 2).then(r => console.log('add item to cart'))
+  remove(product, 2).then(r => console.log('remove item to cart'))
 })
