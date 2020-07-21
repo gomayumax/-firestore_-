@@ -1,0 +1,23 @@
+{
+  "name": "practice-firestore-code",
+  "version": "1.0.0",
+  "description": "[実践firestore](https://amzn.to/3jjPZeN)のコード置き場",
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^9.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gomayumax/-firestore_-.git"
+  },
+  "author": "gomayumax",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gomayumax/-firestore_-/issues"
+  },
+  "homepage": "https://github.com/gomayumax/-firestore_-#readme"
+}
