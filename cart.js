@@ -55,6 +55,13 @@ async function getProductDocument (document) {
  return await db.collection('products').doc(document).get()
 }
 
+async function remove(productRef, quantity) {
+  await productRef.update({
+    quantity: admin.firestore.FieldValue.increment(-1 * quantity),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  })
+}
+
 getProductDocument('bWDgh46LtdLrrMJceQo2').then((product) => {
   add(product, 2).then(r => console.log('add item to cart'))
 })
