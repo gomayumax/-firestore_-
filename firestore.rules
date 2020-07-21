@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+
+  // かごの中身ドキュメントのスキーマ検証
+  function isValidItem(item) {
+    return item.size() == 4
+      && 'product' in item && item.product is map
+      && 'quantity' in item && item.quantity is int
+      && 'createdAt' in item && item.createdAt is timestamp
+      && 'updatedAt' in item && item.updatedAt is timestamp
+      && item.product.size() == 1
+      && 'ref' in item.product && item.product.ref is path;
+  }
+  
+  match /databases/{database}/documents {
+
+    // This rule allows anyone with your database reference to view, edit,
+    // and delete all data in your Firestore database. It is useful for getting
+    // started, but it is configured to expire after 30 days because it
+    // leaves your app open to attackers. At that time, all client
+    // requests to your Firestore database will be denied.
+    //
+    // Make sure to write security rules for your app before that time, or else
+    // all client requests to your Firestore database will be denied until you Update
+    // your rules
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2020, 8, 20);
+    }
+    
+    match /users/{uid}/items-in-cart/{item} {
+      allow read: if request.auth != null
+        && request.auth.uid == uid
+        && resource.data.quantity > 0; // zero is not exists document
+
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && isValidItem(request.resource.data)
+        // ドキュメントIDの検証
+        && request.resource.data.product.ref
+          == /databases/$(database)/documents/items-in-cart/$(item)
+        && request.resource.data.quantity > 0
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && isValidItem(request.resource.data)
+        && request.resource.data.product == resource.data.product
+        // && request.resource.data.quantity > 0 // when remove item, quantity is zero
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+    }
+  }
+}
+  
+
