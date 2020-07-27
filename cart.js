@@ -64,6 +64,35 @@ async function remove(product, quantity) {
     })
 }
 
-getProductDocument('bWDgh46LtdLrrMJceQo2').then((product) => {
-  remove(product, 2).then(r => console.log('remove item to cart'))
+function listen(callback) {
+  return db
+    .collection(`users/${user.uid}/items-in-cart/`)
+    .where('quantity', '>', 0)
+    .onSnapshot(async (snapshot) => {
+      const items = [];
+      for (const document of snapshot.docs) {
+        const product = await document.get('product.ref').get()
+        items.push({
+          name: product.get('name'),
+          photoURL: product.get('photoURL'),
+          price: product.get('price'),
+          quantity: document.get('quantity'),
+        })
+      }
+      callback(items)
+    })
+}
+
+//
+// getProductDocument('bWDgh46LtdLrrMJceQo2')
+//   .then((product) => {
+//     add(product, 2).then(r => console.log('add item to cart'))
+//   })
+
+// getProductDocument('bWDgh46LtdLrrMJceQo2').then((product) => {
+//   remove(product, 2).then(r => console.log('remove item to cart'))
+// })
+
+listen((items) => {
+    console.log(items)
 })
