@@ -11,7 +11,7 @@ service cloud.firestore {
       && item.product.size() == 1
       && 'ref' in item.product && item.product.ref is path;
   }
-  
+
   match /databases/{database}/documents {
 
     // This rule allows anyone with your database reference to view, edit,
@@ -26,7 +26,7 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if request.time < timestamp.date(2020, 8, 20);
     }
-    
+
     match /users/{uid}/items-in-cart/{item} {
       allow read: if request.auth != null
         && request.auth.uid == uid
@@ -46,11 +46,10 @@ service cloud.firestore {
         && request.auth.uid == uid
         && isValidItem(request.resource.data)
         && request.resource.data.product == resource.data.product
-        // && request.resource.data.quantity > 0 // when remove item, quantity is zero
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.updatedAt == request.time;
     }
   }
 }
-  
+
 
