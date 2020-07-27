@@ -15,3 +15,11 @@ exports.updateItemsInCart = functions.firestore
       await change.after.ref.delete()
     }
   })
+
+exports.deleteDocumentZeroQuantity = functions.firestore
+  .document('users/{uid}/item-in-cart/{item}')
+  .onUpdate(async (change) =>{
+    if (change.after.get('quantity') <= 0) {
+      await change.after.ref.delete()
+    }
+  })
