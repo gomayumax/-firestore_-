@@ -1,5 +1,6 @@
 // [START firestore_deps]
 var admin = require("firebase-admin");
+var firebase = require("firebase");
 
 const serviceAccount = require("./config/serviceAccountKey.json");
 
@@ -93,6 +94,18 @@ function listen(callback) {
 //   remove(product, 2).then(r => console.log('remove item to cart'))
 // })
 
-listen((items) => {
-    console.log(items)
+// listen((items) => {
+//     console.log(items)
+// })
+
+// 注文リクエストを投げる
+//　なんかうまく行かない
+firebase.initializeApp(serviceAccount);
+const functions = firebase.functions();
+const func = functions.httpsCallable("order");
+//引数を付けて呼び出し
+func({ user }).then(res => {
+  console.log(res);
+}).catch(e => {
+  console.log(e);
 })
